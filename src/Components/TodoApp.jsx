@@ -1,38 +1,27 @@
-import React, { useReducer } from "react";
-import { TodoReducer } from "./TodoReducer";
-import { TodoAdd } from "./TodoAdd";
-import { TodoList } from "./TodoList";
+import React from "react";
+import Todo from "./Todo.jsx";
+import AddTodo from "./AddTodo.jsx";
+import { useTodo } from "../hooks/todo.js";
 
-const initialState = [{
-    id: new Date().getTime(),
-    description: "Hacer los challengues",
-    done: false
-}]
+const TodoApp = () => {
+  const [state, count, pending, dispatch] = useTodo();
 
-export const TodoApp = () => {
-    const [todos,dispatch]= useReducer(TodoReducer, initialState);
-
-    const handleNewTodo = (todo) =>{
-        const action ={
-            type: "[TODO] ADD TODO",
-            payload: todo
-        }
-        dispatch (action)
-    }
-
-    return (
-        <>
-            <h1>TodoApp: 10, <small>Pendientes: 2</small></h1>
-            <hr/>
-
-            <div className="row">
-                <div className="col-7">
-                    <TodoList todos={todos}/>
-                </div>
-                <div className="col-5">
-                    <TodoAdd onNewTodo={handleNewTodo}/>
-                </div>
-            </div>
-        </>
-    )
+  return (<>
+  <h1>Cantidad: {count}</h1>
+  <h1>Pendientes: {pending}</h1>
+    <AddTodo
+      add={text => dispatch({type: "add", text: text})}
+    />
+    {state.todos.map(todo => (
+      <Todo
+        key={todo.id}
+        todo={todo}
+        check={() => dispatch({type: "check", id: todo.id})}
+        remove={() => dispatch({type: "remove", id: todo.id})}
+        edit={text => dispatch({type: "edit", id: todo.id, text: text})}
+      />
+    ))}
+  </>);
 }
+
+export default TodoApp;
